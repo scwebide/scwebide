@@ -6,7 +6,7 @@ import {map} from 'rxjs/operators'
 import  SharedbAceBinding from 'sharedb-ace/distribution/sharedb-ace-binding'
 import SharedbAceMultipleCursors from '@app/../../sharedb-ace-multiple-cursors/distribution/client';
 
-const shareDbAddr = "ws://192.168.43.107:8080"
+const shareDbAddr = "ws://localhost"
 
 SharedbAceBinding.prototype.setInitialValue = function(){
     this.suppress = true;
