@@ -5,7 +5,7 @@ var ShareDB = require('sharedb');
 var WebSocket = require('ws');
 var WebSocketJSONStream = require('@teamwork/websocket-json-stream');
 
-//import SharedbAceMultipleCursors from 'sharedb-ace-mulitple-cursors/distribution/server';
+const SharedbAceMultipleCursors = require('./sharedb-ace-multiple-cursors/distribution/server');
 
 var backend = new ShareDB();
 createDoc(startServer);
@@ -31,17 +31,25 @@ function startServer() {
   app.get('/*', function(req,res) {
       res.sendFile(path.join(__dirname+'/dist/sc-codeshare/index.html'));
   });
-  /*app.get('/ws', async (ctx) => {
-    const mc = SharedbAceMultipleCursors(REDIS_URL);
-    mc(ctx);
+
+  const cursorDb = {};
+
+  /*app.get('/cursor', function(ctx) {
+    console.log("getting c")
+
   });*/
   var server = http.createServer(app);
 
+
   // Connect any incoming WebSocket connection to ShareDB
   var wss = new WebSocket.Server({server: server});
-  wss.on('connection', function(ws) {
-    var stream = new WebSocketJSONStream(ws);
-    backend.listen(stream);
+  wss.on('connection', function(ws,req) {
+    if(req.url == '/cursor'){
+      SharedbAceMultipleCursors(ws,cursorDb);
+    }else{
+      var stream = new WebSocketJSONStream(ws);
+      backend.listen(stream);
+    }
   });
 
   server.listen(8080);
