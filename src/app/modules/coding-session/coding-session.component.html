@@ -1,0 +1,12 @@
+  <!--<quill-editor
+    [(ngModel)]="doc"
+    [modules]="quillModules"
+    (onEditorCreated)="saveEditor($event)"
+    [readOnly] = "!initialized"
+    (onContentChanged)="contentChanged($event)">
+  </quill-editor>-->
+  <ace [config]="config" [disabled]="false" [(value)]="doc" (change)="changed($event)">
+  </ace>
+
+
+          <!--(blur)="onEditorBlur($event)" (focus)="onEditorFocus($event)" (valueChange)="onValueChange($event)" (selectionChange)="onSelectionChange($event)"-->

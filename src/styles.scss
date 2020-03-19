@@ -1,1 +1,16 @@
 /* You can add global styles to this file, and also import other style files */
+body{
+  margin:0; padding:0;
+}
+
+.ql-editor {
+  padding: 0 !important;
+  height: 100vh;
+}
+
+.ql-editor pre.ql-syntax{
+  margin: 0 !important;
+  padding: 1em !important;
+  width: 100%;
+  min-height: 100vh;
+}
