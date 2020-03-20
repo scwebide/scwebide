@@ -76,6 +76,7 @@ export class CodingSessionComponent implements OnInit, AfterViewInit {
    ).subscribe(({binding,status$})=>{
      this.sharedbBinding = binding;
      this.sharedbStatus$ = status$;
+
    })
   }
 

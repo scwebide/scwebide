@@ -5,7 +5,8 @@ var ShareDB = require('sharedb');
 var WebSocket = require('ws');
 var WebSocketJSONStream = require('@teamwork/websocket-json-stream');
 
-const SharedbAceMultipleCursors = require('./sharedb-ace-multiple-cursors/distribution/server');
+const {subscribe : SharedbAceMultipleCursorsServer} = require('@elgiano/sharedb-ace-multiple-cursors/dist/server');
+//const {subscribe : SharedbAceMultipleCursorsServer} = require('./sharedb-ace-multiple-cursors/dist/server');
 
 var backend = new ShareDB();
 createDoc(startServer);
@@ -45,7 +46,7 @@ function startServer() {
   var wss = new WebSocket.Server({server: server});
   wss.on('connection', function(ws,req) {
     if(req.url == '/cursor'){
-      SharedbAceMultipleCursors(ws,cursorDb);
+      SharedbAceMultipleCursorsServer(ws,cursorDb);
     }else{
       var stream = new WebSocketJSONStream(ws);
       backend.listen(stream);

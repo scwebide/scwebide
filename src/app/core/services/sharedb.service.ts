@@ -4,14 +4,20 @@ import * as ShareDb from 'sharedb/lib/client'
 import {ReplaySubject, bindCallback} from 'rxjs'
 import {map} from 'rxjs/operators'
 import  SharedbAceBinding from 'sharedb-ace/distribution/sharedb-ace-binding'
-import SharedbAceMultipleCursors from '@app/../../sharedb-ace-multiple-cursors/distribution/client';
+import {SharedbAceMultipleCursorsClient} from '@elgiano/sharedb-ace-multiple-cursors/dist/client';
+//import {SharedbAceMultipleCursorsClient} from '@app../../sharedb-ace-multiple-cursors/src/client';
 
-const shareDbAddr = `wss://${window.location.host}`
-
+const shareDbAddr = location.origin.replace(/^http/, 'ws').replace(/:\d+$/,'')
+console.log("here",SharedbAceMultipleCursorsClient)
 SharedbAceBinding.prototype.setInitialValue = function(){
     this.suppress = true;
     this.session.setValue(this.doc.data);
     this.suppress = false;
+}
+SharedbAceBinding.prototype.unlisten = function(){
+    this.session.removeListener('change', this.$onLocalChange);
+    this.doc.on('op', this.$onRemoteChange);
+    this.sharedbBinding.pluginWS.close();
 }
 
 @Injectable({
@@ -51,12 +57,11 @@ export class SharedbService {
   }
 
   getBinding(editor, doc, path:string[]=[], socket: any){
-    console.log(doc.data);
     return new SharedbAceBinding({
       ace:editor,
       doc: doc,
       path,
-      plugins: [SharedbAceMultipleCursors],
+      plugins: [(s,e)=> new SharedbAceMultipleCursorsClient(s,e)],
       pluginWS: socket,
       //id: this.id,
     });
