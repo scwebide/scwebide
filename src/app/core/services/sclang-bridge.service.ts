@@ -19,7 +19,10 @@ export class SclangBridgeService implements OnDestroy {
     this.socket.onclose = ()=>this.status$.next(false);
     this.socket.onerror = (e)=>{console.warn("socket error",e);this.status$.next(false)};
 
-    this.socket.onmessage = (e)=>{this.replies$.next(e.data)}
+    this.socket.onmessage = (e)=>{
+      /*console.log("from bridge",e.data);*/
+      this.replies$.next(e.data)
+    }
   }
 
   interpret(msg:string) {

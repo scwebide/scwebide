@@ -1,8 +1,16 @@
 <div id="main">
 <app-coding-session (interpret)="interpret($event)"></app-coding-session>
-<app-post-window [text]="sclangReplies$ | async"></app-post-window>
+<app-post-window></app-post-window>
 </div>
 
 <div id="footer">
-  {{sclangStatus$ | async}}
+  <p>
+  Bridge:
+  <span *ngIf="sclangStatus$ | async; else disconnected"
+    class="success"
+  >Connected</span>
+  <ng-template #disconnected>
+    <span class="error">Disconnected</span>
+  </ng-template>
+  </p>
 </div>

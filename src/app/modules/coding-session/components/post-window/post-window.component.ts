@@ -1,4 +1,8 @@
-import { Component, OnInit, Input, ViewChild, ElementRef, AfterViewChecked } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, AfterViewChecked } from '@angular/core';
+import {Observable} from 'rxjs'
+import {scan, tap} from 'rxjs/operators'
+
+import {SclangBridgeService} from '@app/core/services/sclang-bridge.service'
 
 @Component({
   selector: 'app-post-window',
@@ -7,15 +11,11 @@ import { Component, OnInit, Input, ViewChild, ElementRef, AfterViewChecked } fro
 })
 export class PostWindowComponent implements OnInit, AfterViewChecked {
 
-  @Input() text: string;
+  accumulated: Observable<string>
 
   @ViewChild('pre',{static:false}) preElement: ElementRef;
 
-  constructor() { }
-
-  ngAfterViewChecked() {
-        this.scrollToBottom();
-  }
+  constructor(private sclang:SclangBridgeService) { }
 
   scrollToBottom(){
     if(this.preElement)
@@ -24,6 +24,14 @@ export class PostWindowComponent implements OnInit, AfterViewChecked {
   }
 
   ngOnInit(): void {
+    this.accumulated =  this.sclang.replies$.pipe(
+      scan((tot,val)=>tot+val,''),
+      tap(_=>this.scrollToBottom())
+    )
+  }
+
+  ngAfterViewChecked(){
+    this.scrollToBottom()
   }
 
 }

@@ -15,7 +15,6 @@ export class IdeComponent implements OnInit {
   constructor( private sclang:SclangBridgeService) { }
 
   ngOnInit(): void {
-    this.sclangReplies$ = this.sclang.replies$
     this.sclangStatus$ = this.sclang.status$
   }
 
