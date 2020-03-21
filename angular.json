@@ -28,7 +28,8 @@
               "src/assets",
             ],
             "styles": [
-              "src/styles.scss"
+              "src/styles.scss",
+              "node_modules/@convergencelabs/ace-collab-ext/css/ace-collab-ext.min.css"
             ],
             "scripts": [
             ]

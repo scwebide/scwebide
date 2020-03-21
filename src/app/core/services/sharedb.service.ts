@@ -4,11 +4,11 @@ import * as ShareDb from 'sharedb/lib/client'
 import {ReplaySubject, bindCallback} from 'rxjs'
 import {map} from 'rxjs/operators'
 import  SharedbAceBinding from 'sharedb-ace/distribution/sharedb-ace-binding'
-import {SharedbAceMultipleCursorsClient} from '@elgiano/sharedb-ace-multiple-cursors/dist/client';
-//import {SharedbAceMultipleCursorsClient} from '@app../../sharedb-ace-multiple-cursors/src/client';
+//import {SharedbAceMultipleCursorsClient} from '@elgiano/sharedb-ace-multiple-cursors/dist/client';
+import {SharedbAceMultipleCursorsClient} from '@app/../../../sharedb-ace-multiple-cursors/src/client';
 
 const shareDbAddr = location.origin.replace(/^http/, 'ws').replace(/:\d+$/,'')
-console.log("here",SharedbAceMultipleCursorsClient)
+
 SharedbAceBinding.prototype.setInitialValue = function(){
     this.suppress = true;
     this.session.setValue(this.doc.data);
@@ -33,7 +33,7 @@ export class SharedbService {
   constructor() {
   }
 
-  connect(editor, path=[]){
+  connect(editor, path=[], userName=""){
     const status$ = new ReplaySubject<boolean>(1);
     this.path = path; // unused, it's for multiple docs
     this.socket = new ReconnectingWebSocket(shareDbAddr);
@@ -50,18 +50,18 @@ export class SharedbService {
       map(err=>{
         if(err) throw err;
         const pluginSocket = new ReconnectingWebSocket(shareDbAddr + '/cursor');
-        const binding = thisService.getBinding(editor,doc,[],pluginSocket);
+        const binding = thisService.getBinding(editor,doc,[],pluginSocket,userName);
         return {binding,status$}
       })
     )
   }
 
-  getBinding(editor, doc, path:string[]=[], socket: any){
+  getBinding(editor, doc, path:string[]=[], socket: any, userName:string){
     return new SharedbAceBinding({
       ace:editor,
       doc: doc,
       path,
-      plugins: [(s,e)=> new SharedbAceMultipleCursorsClient(s,e)],
+      plugins: [(s,e)=> new SharedbAceMultipleCursorsClient(s,e,userName)],
       pluginWS: socket,
       //id: this.id,
     });

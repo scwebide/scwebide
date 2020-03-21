@@ -1,28 +1,8 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, NgZone, ElementRef } from '@angular/core';
 import { SharedbService } from '@app/core/services/sharedb.service'
 import { Subject, ReplaySubject, Observable} from 'rxjs'
 import {takeUntil, bufferTime, filter, map, debounceTime } from 'rxjs/operators'
-
-/*import Quill from 'quill'
-import { Delta } from 'quill-delta'
-const Delta = Quill.import('delta');
-import supercollider from '../../../assets/highlightjs-supercollider';
-
-declare const hljs: any;
-hljs.registerLanguage('supercollider', supercollider);*/
-
-import 'brace';
-
-import 'brace/mode/text';
-import 'brace/theme/github';
-
-import 'brace/theme/tomorrow_night';
-import 'brace/mode/javascript';
-import '@app/../assets/ace-mode-sc';
-
-import { AfterViewInit, ViewChild } from '@angular/core';
-
-import { AceComponent, AceDirective, AceConfigInterface } from 'ngx-ace-wrapper';
+import * as ace from 'ace-builds/src-noconflict/ace';
 
 
 @Component({
@@ -30,7 +10,7 @@ import { AceComponent, AceDirective, AceConfigInterface } from 'ngx-ace-wrapper'
   templateUrl: './coding-session.component.html',
   styleUrls: ['./coding-session.component.scss']
 })
-export class CodingSessionComponent implements OnInit, AfterViewInit {
+export class CodingSessionComponent implements OnInit {
 
   latestState: any;
 
@@ -53,40 +33,47 @@ export class CodingSessionComponent implements OnInit, AfterViewInit {
     toolbar: false,
     syntax: true,
   };*/
-  config: AceConfigInterface = {
-    mode: 'supercollider',
-    theme: 'tomorrow_night',
-    readOnly : false,
-    fontSize: "1em"
-  };
 
   doc = ''
   ace:any;
   sharedbBinding: any;
   sharedbStatus$: Observable<boolean>;
 
-  @ViewChild(AceComponent,{static:false}) componentRef?: AceComponent;
-
-  ngAfterViewInit(): void {
-   // To get the Ace instance:
-
-   this.ace = this.componentRef.directiveRef.ace();
-   this.sharedbService.connect(this.ace).pipe(
-     takeUntil(this.destroyed$),
-   ).subscribe(({binding,status$})=>{
-     this.sharedbBinding = binding;
-     this.sharedbStatus$ = status$;
-
-   })
-  }
-
 
   constructor(
-    private sharedbService:SharedbService
+    private sharedbService:SharedbService,
+    private zone:NgZone,
+    private elementRef:ElementRef
   ) { }
 
   ngOnInit(){
+    this.initAce();
+    console.log("ACE",this.ace)
+    this.sharedbService.connect(this.ace).pipe(
+      takeUntil(this.destroyed$),
+    ).subscribe(({binding,status$})=>{
+      this.sharedbBinding = binding;
+      this.sharedbStatus$ = status$;
 
+    })
+  }
+
+  initAce(){
+    this.zone.runOutsideAngular(() => {
+      ace.config.set('basePath','/assets')
+      this.ace = ace.edit(this.elementRef.nativeElement);
+
+      this.ace.$blockScrolling = Infinity;
+
+      this.ace.setOptions({
+        mode: 'ace/mode/supercollider',
+        theme: 'ace/theme/supercollider_dark',
+        readOnly : false,
+        fontSize: "1em",
+      });
+
+      this.ace.getSession().setUseWorker(false);
+    });
   }
 
   ngOnDestroy(){
@@ -95,7 +82,6 @@ export class CodingSessionComponent implements OnInit, AfterViewInit {
     }
   }
 
-  changed([change,editor]){/*console.log(change)*/}
 
   /*ngOnInit() {
     this.sessionId = 'default';
