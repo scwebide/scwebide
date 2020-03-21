@@ -5,16 +5,19 @@ import { Routes, RouterModule } from '@angular/router';
 import { CodingSessionComponent } from './coding-session.component';
 
 import { AceModule } from 'ngx-ace-wrapper';
+import { IdeComponent } from './pages/ide/ide.component';
+import { PostWindowComponent } from './components/post-window/post-window.component';
+import { ScKeybindingsDirective } from './components/sc-keybindings.directive';
 
 const routes:Routes = [
   {
     path: '',
-    component: CodingSessionComponent
+    component: IdeComponent
   }
 ]
 
 @NgModule({
-  declarations: [CodingSessionComponent],
+  declarations: [CodingSessionComponent, IdeComponent, PostWindowComponent, ScKeybindingsDirective],
   imports: [
     CommonModule,
     FormsModule,

@@ -1,0 +1,8 @@
+<div id="main">
+<app-coding-session (interpret)="interpret($event)"></app-coding-session>
+<app-post-window [text]="sclangReplies$ | async"></app-post-window>
+</div>
+
+<div id="footer">
+  {{sclangStatus$ | async}}
+</div>

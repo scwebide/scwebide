@@ -1,10 +1,4 @@
-  <!--<quill-editor
-    [(ngModel)]="doc"
-    [modules]="quillModules"
-    (onEditorCreated)="saveEditor($event)"
-    [readOnly] = "!initialized"
-    (onContentChanged)="contentChanged($event)">
-  </quill-editor>-->
-
-
-          <!--(blur)="onEditorBlur($event)" (focus)="onEditorFocus($event)" (valueChange)="onValueChange($event)" (selectionChange)="onSelectionChange($event)"-->
+<div #editor
+  [ScKeybindings]="ace"
+  (interpret)="this.interpret.emit($event)"
+></div>

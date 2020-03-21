@@ -1,7 +1,7 @@
-import { Component, OnInit, OnDestroy, NgZone, ElementRef } from '@angular/core';
+import { Component, AfterViewInit, ViewChild, OnDestroy, NgZone, ElementRef, Output, EventEmitter } from '@angular/core';
 import { SharedbService } from '@app/core/services/sharedb.service'
-import { Subject, ReplaySubject, Observable} from 'rxjs'
-import {takeUntil, bufferTime, filter, map, debounceTime } from 'rxjs/operators'
+import { ReplaySubject, Observable} from 'rxjs'
+import {takeUntil} from 'rxjs/operators'
 import * as ace from 'ace-builds/src-noconflict/ace';
 
 
@@ -10,7 +10,7 @@ import * as ace from 'ace-builds/src-noconflict/ace';
   templateUrl: './coding-session.component.html',
   styleUrls: ['./coding-session.component.scss']
 })
-export class CodingSessionComponent implements OnInit {
+export class CodingSessionComponent implements AfterViewInit, OnDestroy {
 
   latestState: any;
 
@@ -39,29 +39,23 @@ export class CodingSessionComponent implements OnInit {
   sharedbBinding: any;
   sharedbStatus$: Observable<boolean>;
 
+  @ViewChild("editor",{static:true}) editorEl:ElementRef
+  @Output() interpret = new EventEmitter<string>()
 
   constructor(
     private sharedbService:SharedbService,
     private zone:NgZone,
-    private elementRef:ElementRef
   ) { }
 
-  ngOnInit(){
-    this.initAce();
-    console.log("ACE",this.ace)
-    this.sharedbService.connect(this.ace).pipe(
-      takeUntil(this.destroyed$),
-    ).subscribe(({binding,status$})=>{
-      this.sharedbBinding = binding;
-      this.sharedbStatus$ = status$;
-
-    })
+  ngAfterViewInit(){
+    setTimeout(()=>{this.initAce(),this.connect()});
   }
 
   initAce(){
     this.zone.runOutsideAngular(() => {
       ace.config.set('basePath','/assets')
-      this.ace = ace.edit(this.elementRef.nativeElement);
+      console.log(this.editorEl.nativeElement)
+      this.ace = ace.edit(this.editorEl.nativeElement);
 
       this.ace.$blockScrolling = Infinity;
 
@@ -74,6 +68,16 @@ export class CodingSessionComponent implements OnInit {
 
       this.ace.getSession().setUseWorker(false);
     });
+  }
+
+  connect(){
+    // console.log("ACE",this.ace)
+    this.sharedbService.connect(this.ace).pipe(
+      takeUntil(this.destroyed$),
+    ).subscribe(({binding,status$})=>{
+      this.sharedbBinding = binding;
+      this.sharedbStatus$ = status$;
+    })
   }
 
   ngOnDestroy(){

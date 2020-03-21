@@ -3,14 +3,19 @@ body{
   margin:0; padding:0;
 }
 
-.ql-editor {
-  padding: 0 !important;
-  height: 100vh;
+@keyframes fadeIn {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
 }
 
-.ql-editor pre.ql-syntax{
-  margin: 0 !important;
-  padding: 1em !important;
-  width: 100%;
-  min-height: 100vh;
+.codeFlash {
+  position:absolute;
+  background:rgba(100,200,100,0.5);
+  z-index:20;
+  opacity: 0;
+  animation: fadeIn .5s ease-in-out;
 }
