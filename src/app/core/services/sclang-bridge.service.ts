@@ -17,7 +17,10 @@ export class SclangBridgeService implements OnDestroy {
     this.socket = new ReconnectingWebSocket(sclangBridgeAddr);
     this.socket.onopen = ()=>this.status$.next(true);
     this.socket.onclose = ()=>this.status$.next(false);
-    this.socket.onerror = (e)=>{console.warn("socket error",e);this.status$.next(false)};
+    this.socket.onerror = (e)=>{
+      console.warn("sclang-bridge socket",e.message || e);
+      this.status$.next(false)
+    };
 
     this.socket.onmessage = (e)=>{
       /*console.log("from bridge",e.data);*/

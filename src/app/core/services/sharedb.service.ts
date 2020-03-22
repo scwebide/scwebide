@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import {UserService} from './user.service'
 import ReconnectingWebSocket  from  'reconnecting-websocket';
 import * as ShareDb from 'sharedb/lib/client'
 import {ReplaySubject, bindCallback} from 'rxjs'
@@ -16,9 +17,10 @@ SharedbAceBinding.prototype.setInitialValue = function(){
 }
 SharedbAceBinding.prototype.unlisten = function(){
     this.session.removeListener('change', this.$onLocalChange);
-    this.doc.on('op', this.$onRemoteChange);
-    this.sharedbBinding.pluginWS.close();
+    this.doc.removeListener('op', this.$onRemoteChange);
+    this.pluginWS.close();
 }
+
 
 @Injectable({
   providedIn: 'root'
@@ -30,7 +32,7 @@ export class SharedbService {
   status$ = new ReplaySubject<boolean>(1);
   path: any;
 
-  constructor() {
+  constructor(private userService:UserService) {
   }
 
   connect(editor, path=[], userName=""){
@@ -50,6 +52,7 @@ export class SharedbService {
       map(err=>{
         if(err) throw err;
         const pluginSocket = new ReconnectingWebSocket(shareDbAddr + '/cursor');
+        thisService.storeNewUsers(pluginSocket);
         const binding = thisService.getBinding(editor,doc,[],pluginSocket,userName);
         return {binding,status$}
       })
@@ -66,6 +69,24 @@ export class SharedbService {
       //id: this.id,
     });
     //this.connections[path.join('-')] = binding;
+  }
+
+  storeNewUsers(socket){
+    console.log("SOCK",socket)
+    socket.addEventListener('message',(msg)=>{
+      let data;
+      try{
+       data = JSON.parse(msg.data);
+      }catch(e){
+       return console.warn("json parse error",e)
+      }
+
+      if(data.id == 'newUser')
+        return this.userService.addUser(data.userName)
+      if(data.id == 'removeUser')
+        return this.userService.removeUser(data.userName)
+
+    });
   }
 
 }

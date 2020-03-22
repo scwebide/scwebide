@@ -4,6 +4,20 @@ body{
   font-family: monospace, sans-serif;
 }
 
+.docklet{
+  display: block;
+  background: #444;
+  color: #fefefe;
+}
+
+.docklet h2 {
+  font-size: 0.75rem;
+  font-weight: normal;
+  padding:0.5rem;
+  margin:0;
+  background: #333;
+}
+
 @keyframes fadeIn {
   from {
     opacity: 1;
@@ -12,7 +26,6 @@ body{
     opacity: 0;
   }
 }
-
 .codeFlash {
   position:absolute;
   background:rgba(100,200,100,0.5);

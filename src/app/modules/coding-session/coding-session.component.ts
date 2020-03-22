@@ -1,5 +1,6 @@
-import { Component, AfterViewInit, ViewChild, OnDestroy, NgZone, ElementRef, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, AfterViewInit, ViewChild, OnDestroy, NgZone, ElementRef, Output, EventEmitter } from '@angular/core';
 import { SharedbService } from '@app/core/services/sharedb.service'
+import {UserService} from '@app/core/services/user.service'
 import { ReplaySubject, Observable} from 'rxjs'
 import {takeUntil} from 'rxjs/operators'
 import * as ace from 'ace-builds/src-noconflict/ace';
@@ -10,7 +11,7 @@ import * as ace from 'ace-builds/src-noconflict/ace';
   templateUrl: './coding-session.component.html',
   styleUrls: ['./coding-session.component.scss']
 })
-export class CodingSessionComponent implements AfterViewInit, OnDestroy {
+export class CodingSessionComponent implements OnInit, AfterViewInit, OnDestroy {
 
   latestState: any;
 
@@ -44,8 +45,18 @@ export class CodingSessionComponent implements AfterViewInit, OnDestroy {
 
   constructor(
     private sharedbService:SharedbService,
+    private userService:UserService,
     private zone:NgZone,
   ) { }
+
+  ngOnInit(){
+    this.userService.name$.pipe(
+      takeUntil(this.destroyed$)
+    ).subscribe(name=>{
+      this.userId=name;
+      this.connect();
+    })
+  }
 
   ngAfterViewInit(){
     setTimeout(()=>{this.initAce(),this.connect()});
@@ -71,8 +82,11 @@ export class CodingSessionComponent implements AfterViewInit, OnDestroy {
   }
 
   connect(){
+    if(!(this.ace && this.userId)) return
     // console.log("ACE",this.ace)
-    this.sharedbService.connect(this.ace).pipe(
+    this.disconnect()
+
+    this.sharedbService.connect(this.ace,[],this.userId).pipe(
       takeUntil(this.destroyed$),
     ).subscribe(({binding,status$})=>{
       this.sharedbBinding = binding;
@@ -80,10 +94,16 @@ export class CodingSessionComponent implements AfterViewInit, OnDestroy {
     })
   }
 
-  ngOnDestroy(){
-    if(this.sharedbBinding){
+  disconnect(){
+    if(this.sharedbBinding) {
       this.sharedbBinding.unlisten()
     }
+  }
+
+  ngOnDestroy(){
+    this.disconnect()
+    this.destroyed$.next(true)
+    this.destroyed$.complete()
   }
 
 

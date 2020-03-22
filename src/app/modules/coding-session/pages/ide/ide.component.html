@@ -1,9 +1,22 @@
-<div id="main">
+<div id="main" *ngIf="ready; else loading">
 <app-coding-session (interpret)="interpret($event)"></app-coding-session>
-<app-post-window></app-post-window>
+<div id="side-right">
+
+  <app-post-window class="docklet"></app-post-window>
+  <app-users-list class="docklet"
+    *ngIf="showingUsers"
+    [users]="users$ | async"
+  ></app-users-list>
+</div>
 </div>
 
 <div id="footer">
+  <p *ngIf="users$ | async as users">
+    <button (click)="showingUsers = !showingUsers">
+      {{ users.length }} User{{users.length == 1 ? '' : 's'}}
+    </button>
+  </p>
+
   <p>
   Bridge:
   <span *ngIf="sclangStatus$ | async; else disconnected"
@@ -14,3 +27,9 @@
   </ng-template>
   </p>
 </div>
+
+<ng-template #loading>
+  <div>
+    Loading...
+  </div>
+</ng-template>

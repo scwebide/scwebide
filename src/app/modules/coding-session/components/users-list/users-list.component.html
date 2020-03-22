@@ -1,0 +1,12 @@
+<h2>Users</h2>
+<ul>
+  <li *ngFor="let username of users" [style.color]="getColor(username)">
+    <button *ngIf="username === thisUsername" (click)="changeUserName()">
+      {{username}} (you)
+    </button>
+
+    <span *ngIf="username !== thisUsername">
+      {{username}}
+    </span>
+  </li>
+</ul>

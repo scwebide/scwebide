@@ -24,6 +24,13 @@ function createDoc(callback) {
   });
 }
 
+function sendInitUsers(ws, db){
+  for(const userName in db){
+    const msg  = Object.assign({id:'newUser', userName },db[userName]);
+    ws.send(JSON.stringify(msg));
+  }
+}
+
 function startServer() {
   // Create a web server to serve files and listen to WebSocket connections
   var app = express();
@@ -45,6 +52,7 @@ function startServer() {
   var wss = new WebSocket.Server({server: server});
   wss.on('connection', function(ws,req) {
     if(req.url == '/cursor'){
+      sendInitUsers(ws, cursorDb);
       SharedbAceMultipleCursorsServer(ws,cursorDb);
     }else{
       var stream = new WebSocketJSONStream(ws);
