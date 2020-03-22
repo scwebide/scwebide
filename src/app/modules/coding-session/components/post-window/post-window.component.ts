@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild, ElementRef, AfterViewChecked } from '@angular/core';
-import {Observable} from 'rxjs'
+import {Observable, merge, Subject} from 'rxjs'
 import {scan, tap} from 'rxjs/operators'
 
 import {SclangBridgeService} from '@app/core/services/sclang-bridge.service'
@@ -12,6 +12,7 @@ import {SclangBridgeService} from '@app/core/services/sclang-bridge.service'
 export class PostWindowComponent implements OnInit, AfterViewChecked {
 
   accumulated: Observable<string>
+  reset$ = new Subject<string>()
 
   @ViewChild('pre',{static:false}) preElement: ElementRef;
 
@@ -24,14 +25,18 @@ export class PostWindowComponent implements OnInit, AfterViewChecked {
   }
 
   ngOnInit(): void {
-    this.accumulated =  this.sclang.replies$.pipe(
-      scan((tot,val)=>tot+val,''),
+    this.accumulated =  merge(this.reset$,this.sclang.replies$).pipe(
+      scan((tot,val)=>val=='\x0C' ? '' : tot+val,''),
       tap(_=>this.scrollToBottom())
     )
   }
 
   ngAfterViewChecked(){
     this.scrollToBottom()
+  }
+
+  clear(){
+    this.reset$.next('\x0C')
   }
 
 }

@@ -1,8 +1,9 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import {SclangBridgeService} from '@app/core/services/sclang-bridge.service'
 import {UserService} from '@app/core/services/user.service'
 import {Observable, ReplaySubject} from 'rxjs'
 import {takeUntil} from 'rxjs/operators'
+import {PostWindowComponent} from '../../components/post-window/post-window.component'
 
 @Component({
   selector: 'app-ide',
@@ -18,6 +19,9 @@ export class IdeComponent implements OnInit, OnDestroy {
 
   ready = false;
   showingUsers = false;
+
+  @ViewChild(PostWindowComponent,{static:false}) postWindow: PostWindowComponent;
+
 
   constructor(
     private sclang:SclangBridgeService,
@@ -45,6 +49,9 @@ export class IdeComponent implements OnInit, OnDestroy {
 
   interpret(code:string){
     this.sclang.interpret(code)
+  }
+  clearPostWindow(){
+    this.postWindow.clear()
   }
 
   selectUserName(){

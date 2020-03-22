@@ -1,5 +1,8 @@
 <div id="main" *ngIf="ready; else loading">
-<app-coding-session (interpret)="interpret($event)"></app-coding-session>
+<app-coding-session
+  (interpret)="interpret($event)"
+  (clearPostWindow)="clearPostWindow()"
+></app-coding-session>
 <div id="side-right">
 
   <app-post-window class="docklet"></app-post-window>

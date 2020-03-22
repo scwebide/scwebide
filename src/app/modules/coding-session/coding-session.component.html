@@ -1,4 +1,5 @@
 <div #editor
   [ScKeybindings]="ace"
   (interpret)="this.interpret.emit($event)"
+  (clearPostWindow)="this.clearPostWindow.emit($event)"
 ></div>

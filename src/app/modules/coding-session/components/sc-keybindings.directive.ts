@@ -7,6 +7,7 @@ import {Range} from 'ace-builds'
 export class ScKeybindingsDirective implements OnChanges{
   @Input() ScKeybindings: any;
   @Output()  interpret = new EventEmitter<string>()
+  @Output()  clearPostWindow = new EventEmitter<void>()
   constructor() { }
 
   ace:any;
@@ -16,23 +17,32 @@ export class ScKeybindingsDirective implements OnChanges{
       this.ace = this.ScKeybindings
   }
 
+  stopEvent(e){
+    e.stopPropagation();
+    e.preventDefault();
+  }
+
   @HostListener("keydown", ['$event']) onKeyDown(e){
-    if(!(e.ctrlKey || e.shiftKey)) return
+    //console.log("KD", e)
+    if(!(e.ctrlKey || e.metaKey || e.shiftKey)) return
     switch(e.key){
       case 'Enter':
         if(e.ctrlKey) this.interpretCurrentBlock()
         else if(e.shiftKey) this.interpretCurrentLine()
-        e.stopPropagation();
-        e.preventDefault();
+        this.stopEvent(e);
         break;
       case '.':
         this.interpret.emit("CmdPeriod.run");
-        e.stopPropagation();
-        e.preventDefault();
+        this.stopEvent(e)
+        break;
+      case 'p':
+        if(e.altKey){
+          this.clearPostWindow.emit()
+          this.stopEvent(e)
+        }
         break;
 
     }
-    console.log("KD", e)
   }
 
   interpretCurrentLine(){

@@ -42,6 +42,7 @@ export class CodingSessionComponent implements OnInit, AfterViewInit, OnDestroy 
 
   @ViewChild("editor",{static:true}) editorEl:ElementRef
   @Output() interpret = new EventEmitter<string>()
+  @Output() clearPostWindow = new EventEmitter<void>()
 
   constructor(
     private sharedbService:SharedbService,
