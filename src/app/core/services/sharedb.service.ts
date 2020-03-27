@@ -5,8 +5,8 @@ import * as ShareDb from 'sharedb/lib/client'
 import {ReplaySubject, bindCallback} from 'rxjs'
 import {map} from 'rxjs/operators'
 import  SharedbAceBinding from 'sharedb-ace/distribution/sharedb-ace-binding'
-//import {SharedbAceMultipleCursorsClient} from 'sharedb-ace-collab';
-import {SharedbAceMultipleCursorsClient} from '@app/../../../sharedb-ace-multiple-cursors/dist/client';
+import {SharedbAceMultipleCursorsClient} from 'sharedb-ace-collab';
+//import {SharedbAceMultipleCursorsClient} from '@app/../../../sharedb-ace-multiple-cursors/dist/client';
 
 const shareDbAddr = location.origin.replace(/^http/, 'ws').replace(/:\d+$/,'')
 
