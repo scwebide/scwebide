@@ -21,6 +21,40 @@ SharedbAceBinding.prototype.unlisten = function(){
     this.pluginWS.close();
 }
 
+SharedbAceBinding.prototype.onRemoteChange = function(ops, source) {
+    this.logger.log(`*remote*: fired ${Date.now()}`);
+    const self = this;
+
+    const opsPath = ops[0].p.slice(0, ops[0].p.length - 1).toString();
+    this.logger.log(opsPath);
+    if (source === self) {
+      this.logger.log('*remote*: op origin is self; _skipping_');
+      return;
+    } else if (opsPath !== this.path.toString()) {
+      this.logger.log('*remote*: not from my path; _skipping_');
+      return;
+    }
+
+    const deltas = this.opTransform(ops);
+    this.logger.log(`*remote*: op received: ${JSON.stringify(ops)}`);
+    this.logger.log(`*remote*: transformed delta: ${JSON.stringify(deltas)}`);
+
+    self.suppress = true;
+    // store cursor's previous position
+    const cursorPos = this.editor.getCursorPosition();
+    // apply changes
+    self.session.getDocument().applyDeltas(deltas);
+    // restore cursor's previous position
+    this.editor.moveCursorTo(cursorPos.row,cursorPos.column);
+
+    self.suppress = false;
+
+    this.logger.log('*remote*: session value');
+    this.logger.log(JSON.stringify(this.session.getValue()));
+    this.logger.log('*remote*: delta applied');
+
+}
+
 
 @Injectable({
   providedIn: 'root'
