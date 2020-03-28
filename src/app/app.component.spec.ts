@@ -20,16 +20,16 @@ describe('AppComponent', () => {
     expect(app).toBeTruthy();
   });
 
-  it(`should have as title 'sc-codeshare'`, () => {
+  it(`should have as title 'scwebide'`, () => {
     const fixture = TestBed.createComponent(AppComponent);
     const app = fixture.debugElement.componentInstance;
-    expect(app.title).toEqual('sc-codeshare');
+    expect(app.title).toEqual('scwebide');
   });
 
   it('should render title', () => {
     const fixture = TestBed.createComponent(AppComponent);
     fixture.detectChanges();
     const compiled = fixture.debugElement.nativeElement;
-    expect(compiled.querySelector('.content span').textContent).toContain('sc-codeshare app is running!');
+    expect(compiled.querySelector('.content span').textContent).toContain('scwebide app is running!');
   });
 });

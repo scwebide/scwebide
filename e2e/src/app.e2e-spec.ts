@@ -10,7 +10,7 @@ describe('workspace-project App', () => {
 
   it('should display welcome message', () => {
     page.navigateTo();
-    expect(page.getTitleText()).toEqual('sc-codeshare app is running!');
+    expect(page.getTitleText()).toEqual('scwebide app is running!');
   });
 
   afterEach(async () => {

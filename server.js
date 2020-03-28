@@ -34,9 +34,9 @@ function sendInitUsers(ws, db){
 function startServer() {
   // Create a web server to serve files and listen to WebSocket connections
   var app = express();
-  app.use(express.static(__dirname + '/dist/sc-codeshare'));
+  app.use(express.static(__dirname + '/dist/scwebide'));
   app.get('/*', function(req,res) {
-      res.sendFile(path.join(__dirname+'/dist/sc-codeshare/index.html'));
+      res.sendFile(path.join(__dirname+'/dist/scwebide/index.html'));
   });
 
   const cursorDb = {};
