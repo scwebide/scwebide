@@ -41,12 +41,7 @@ function startServer() {
 
   const cursorDb = {};
 
-  /*app.get('/cursor', function(ctx) {
-    console.log("getting c")
-
-  });*/
   var server = http.createServer(app);
-
 
   // Connect any incoming WebSocket connection to ShareDB
   var wss = new WebSocket.Server({server: server});

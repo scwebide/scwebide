@@ -21,6 +21,35 @@ SharedbAceBinding.prototype.unlisten = function(){
     this.pluginWS.close();
 }
 
+SharedbAceBinding.prototype.onSubmitError = function(err) {
+    if(err.code == "ERR_OP_VERSION_NEWER_THAN_CURRENT_SNAPSHOT"){
+      console.warn("[sharedb] ERR_OP_VERSION_NEWER_THAN_CURRENT_SNAPSHOT")
+      this.suppress = true;
+      this.doc.version = 0
+      this.doc.fetch(err=>{
+        this.setInitialValue();
+      })
+    }
+}
+SharedbAceBinding.prototype.onLocalChange = function(delta) {
+    this.logger.log(`*local*: fired ${Date.now()}`);
+    this.logger.log(`*local*: delta received: ${JSON.stringify(delta)}`);
+
+    if (this.suppress) {
+      this.logger.log('*local*: local delta, _skipping_');
+      return;
+    }
+    const op = this.deltaTransform(delta);
+    this.logger.log(`*local*: transformed op: ${JSON.stringify(op)}`);
+
+    const docSubmitted = (err) => {
+      if (err) return this.onSubmitError(err);
+      this.logger.log('*local*: op submitted');
+    };
+
+    this.doc.submitOp(op, { source: this }, docSubmitted);
+  }
+
 SharedbAceBinding.prototype.onRemoteChange = function(ops, source) {
     this.logger.log(`*remote*: fired ${Date.now()}`);
     const self = this;
@@ -106,7 +135,7 @@ export class SharedbService {
   }
 
   storeNewUsers(socket){
-    console.log("SOCK",socket)
+    // console.log("SOCK",socket)
     socket.addEventListener('message',(msg)=>{
       let data;
       try{
