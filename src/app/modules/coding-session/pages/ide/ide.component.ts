@@ -51,7 +51,7 @@ export class IdeComponent implements OnInit, OnDestroy {
     this.sclang.interpret(code)
   }
   clearPostWindow(){
-    this.postWindow.clear()
+    setTimeout(()=>this.postWindow.clear(),0)
   }
 
   selectUserName(){

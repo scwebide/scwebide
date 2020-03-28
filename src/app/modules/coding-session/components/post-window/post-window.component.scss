@@ -13,9 +13,11 @@ h2 {
   background: #333;
 }
 pre {
+  max-width: 100%;
+  word-wrap: break-word;
   margin:0;
   white-space: pre-wrap;
-  overflow-y: auto;
+  overflow: auto;
   max-height: calc(100% - 2.75rem);
   padding:0.5em 1em;
 }

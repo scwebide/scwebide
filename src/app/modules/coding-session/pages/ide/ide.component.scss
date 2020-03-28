@@ -1,16 +1,24 @@
 #main {
+  width: 100%;
   display: flex;
   align-items: stretch;
   height:calc(100vh - 1.75rem);
 }
 
 app-coding-session{
-  width: 100%
+  min-width: 0;
+  width: 100%;
+  overflow: auto;
+  resize: horizontal;
+  position: relative;
 }
+
 
 #side-right{
   min-width: 20em;
   display: flex; flex-direction: column;
+  flex:1;
+  flex-shrink:2
 }
 
 #footer {
@@ -19,7 +27,9 @@ app-coding-session{
   font-size: 0.75em;
   background: #333;
   color: #dedede;
-  display: flex
+  display: flex;
+  resize: horizontal;
+
 }
 
 #footer p{margin:0 1em 0 0;padding:0}
